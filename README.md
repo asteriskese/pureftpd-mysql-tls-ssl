@@ -10,10 +10,7 @@
 +Passwords will be stored encrypted as MD5 strings in the database.
 
 
-CONTACT TO
-
+CONTACT TO:
 Skype: tinhcx
-
 Email: tinhcx@gmail.com
-
 System Administrator for 7 years
