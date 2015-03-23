@@ -1,5 +1,5 @@
 ﻿###VIRTUAL HOSTING WITH PUREFTPD + MYSQL AUTHENTICATION + TLS/SSL + QUOTA AND BANDWIDTH MANAGEMENT
-(Environment: CentOS-6.6-x86_64-minimal.iso)
+Environment: CentOS-6.6-x86_64-minimal.iso
 
 +This document describes how to install a PureFTPd server that uses virtual users from a MySQL database instead of real system users. 
 
