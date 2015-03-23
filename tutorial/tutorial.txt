@@ -96,7 +96,7 @@ rpm -ivh epel-release-6-8.noarch.rpm
 yum install yum-priorities
 #
 Edit /etc/yum.repos.d/epel.repo...
-vi /etc/yum.repos.d/epel.repo
+#nano /etc/yum.repos.d/epel.repo
 ... and add the line priority=10 to the [epel] section:
 [epel]
 name=Extra Packages for Enterprise Linux 6 - $basearch
@@ -110,14 +110,14 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
 [...]
 #
 Now we can install MySQL and phpMyAdmin as follows:
-yum install mysql mysql-server
+#yum install mysql mysql-server
 #
 Then we create the system startup links for MySQL:
-chkconfig --levels 235 mysqld on
-/etc/init.d/mysqld start
+#chkconfig --levels 235 mysqld on
+#/etc/init.d/mysqld start
 #
 Create a password for the MySQL user root (replace yourrootsqlpassword with the password you want to use):
-mysql_secure_installation
+#mysql_secure_installation
 [root@server1 ~]# mysql_secure_installation
 	NOTE: RUNNING ALL PARTS OF THIS SCRIPT IS RECOMMENDED FOR ALL MySQL
 	      SERVERS IN PRODUCTION USE!  PLEASE READ EACH STEP CAREFULLY!
@@ -190,13 +190,13 @@ Then we create an ftp group (ftpgroup) and user (ftpuser) that all our virtual u
 Create The MySQL Database For PureFTPd
 Now we create a database called pureftpd and a MySQL user named pureftpd which the PureFTPd daemon will use later on to connect to the pureftpd database:
 #mysql -u root -p
-mysql>CREATE DATABASE pureftpd;
-mysql>GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON pureftpd.* TO 'pureftpd'@'localhost' IDENTIFIED BY 'ftpdpass';
-mysql>FLUSH PRIVILEGES;
+#mysql>CREATE DATABASE pureftpd;
+#mysql>GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP ON pureftpd.* TO 'pureftpd'@'localhost' IDENTIFIED BY 'ftpdpass';
+#mysql>FLUSH PRIVILEGES;
 #
 Replace the string ftpdpass with whatever password you want to use for the MySQL user pureftpd. Still on the MySQL shell, we create the database table we need (yes, there is only one table!):
-mysql>USE pureftpd;
-mysql>CREATE TABLE IF NOT EXISTS `ftpd` (
+#mysql>USE pureftpd;
+#mysql>CREATE TABLE IF NOT EXISTS `ftpd` (
   `id` int(3) NOT NULL AUTO_INCREMENT,
   `user` varchar(16) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `password` varchar(64) COLLATE utf8_unicode_ci NOT NULL DEFAULT '2e4e106f70093bd3ef9b9d4c62acc14f' COMMENT 'md5(''310212'')',
@@ -238,7 +238,7 @@ mysql>CREATE TABLE IF NOT EXISTS `ftpd` (
 ###########################################
 3/CONFIG PUREFTPD WITH MYSQL AUTHENTICATION
 Edit /etc/pure-ftpd/pure-ftpd.conf and make sure that the ChrootEveryone, MySQLConfigFile, and CreateHomeDir lines are enabled and look like this:
-nano /etc/pure-ftpd/pure-ftpd.conf
+#nano /etc/pure-ftpd/pure-ftpd.conf
 [...]
 ChrootEveryone			yes
 [...]
@@ -251,37 +251,36 @@ The CreateHomeDir line will make PureFTPd create a user's home directory when th
 #
 Then we edit /etc/pure-ftpd/pureftpd-mysql.conf. It should look like this:'
 cp /etc/pure-ftpd/pureftpd-mysql.conf /etc/pure-ftpd/pureftpd-mysql.conf_orig
-cat /dev/null > /etc/pure-ftpd/pureftpd-mysql.conf
-nano /etc/pure-ftpd/pureftpd-mysql.conf
-#
-####################################
-#/etc/pure-ftpd/pureftpd-mysql.conf#
-####################################
-#Unix socket
-MYSQLSocket     /var/lib/mysql/mysql.sock     
+#nano /etc/pure-ftpd/pureftpd-mysql.conf
+	#
+	####################################
+	#/etc/pure-ftpd/pureftpd-mysql.conf#
+	####################################
+	#Unix socket
+	MYSQLSocket     /var/lib/mysql/mysql.sock     
 
-#Not using TCP CONNECT:
-#MYSQLServer    localhost
-#MYSQLPort      3306
-#
-MYSQLDatabase   pureftpd
-#
-#MYSQLUser       nginx
-#MYSQLPassword   nginx
-#
-MYSQLUser       ftpuser
-MYSQLPassword   ftpgroup
-#
-#MYSQLCrypt md5, cleartext, crypt() or password() - md5 is VERY RECOMMENDABLE uppon cleartext
-MYSQLCrypt          md5
-MYSQLGetPW          SELECT Password        FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")      
-MYSQLGetUID         SELECT Uid             FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R") 
-MYSQLGetGID         SELECT Gid             FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MYSQLGetDir         SELECT Dir             FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetBandwidthUL SELECT ULBandwidth     FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetBandwidthDL SELECT DLBandwidth     FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetQTASZ       SELECT QuotaSize       FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
-MySQLGetQTAFS       SELECT QuotaFiles      FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+	#Not using TCP CONNECT:
+	#MYSQLServer    localhost
+	#MYSQLPort      3306
+	#
+	MYSQLDatabase   pureftpd
+	#
+	#MYSQLUser       nginx
+	#MYSQLPassword   nginx
+	#
+	MYSQLUser       ftpuser
+	MYSQLPassword   ftpgroup
+	#
+	#MYSQLCrypt md5, cleartext, crypt() or password() - md5 is VERY RECOMMENDABLE uppon cleartext
+	MYSQLCrypt          md5
+	MYSQLGetPW          SELECT Password        FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")      
+	MYSQLGetUID         SELECT Uid             FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R") 
+	MYSQLGetGID         SELECT Gid             FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+	MYSQLGetDir         SELECT Dir             FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+	MySQLGetBandwidthUL SELECT ULBandwidth     FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+	MySQLGetBandwidthDL SELECT DLBandwidth     FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+	MySQLGetQTASZ       SELECT QuotaSize       FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
+	MySQLGetQTAFS       SELECT QuotaFiles      FROM ftpd WHERE User="\L"    AND status="1" AND (ipaccess = "*" OR ipaccess LIKE "\R")
 #
 Make sure that you replace the string ftpdpass with the real password for the MySQL user pureftpd in the line MYSQLPassword! Please note that we use md5 as MYSQLCrypt method, which means we will store the users' passwords as an MD5 string in the database which is far more secure than using plain text passwords!'
 Now we create the system startup links for PureFTPd and start it:
@@ -289,17 +288,17 @@ Now we create the system startup links for PureFTPd and start it:
 #/etc/init.d/pure-ftpd start 
 #
 To populate the database you can use the MySQL shell:
-mysql -u root -p
-USE pureftpd;
+#mysql -u root -p
+#mysql>USE pureftpd;
 #
 Now we create the user exampleuser with the status 1 (which means his ftp account is active), the password secret (which will be stored encrypted using MySQL's MD5 function), the UID and GID 2001 (use the userid and groupid of the user/group you created at the end of step two!), the home directory /home/www.example.com, an upload and download bandwidth of 100 KB/sec. (kilobytes per second), and a quota of 50 MB:'
-INSERT INTO `ftpd` (`User`, `status`, `Password`, `Uid`, `Gid`, `Dir`, `ULBandwidth`, `DLBandwidth`, `comment`, `ipaccess`, `QuotaSize`, `QuotaFiles`) VALUES ('exampleuser', '1', MD5('secret'), '2001', '2001', '/home/www.example.com', '100', '100', '', '*', '50', '0');
-quit;
+#mysql>INSERT INTO `ftpd` (`User`, `status`, `Password`, `Uid`, `Gid`, `Dir`, `ULBandwidth`, `DLBandwidth`, `comment`, `ipaccess`, `QuotaSize`, `QuotaFiles`) VALUES ('exampleuser', '1', MD5('secret'), '2001', '2001', '/home/www.example.com', '100', '100', '', '*', '50', '0');
+#mysql>quit;
 #
 Now open your FTP client program on your work station (something like WS_FTP or SmartFTP if you are on a Windows system or gFTP on a Linux desktop) and try to connect. As hostname you use server1.example.com (or the IP address of the system), the username is exampleuser, and the password is secret.
 If you are able to connect - congratulations! If not, something went wrong.
 Now, if you run
-ls -l /home
+#ls -l /home
 you should see that the directory /home/www.example.com (exampleuser's home directory) has been created automatically, and it is owned by ftpuser and ftpgroup (the user/group we created at the end of step two):'
 [root@server1 ~]# ls -l /home
 total 4
@@ -351,7 +350,7 @@ IPV4Only                        yesroot@srv148 ~
 (If you want to use /var/ftp instead, replace /home/ftp with /var/ftp in the above commands.) 
 Anonymous users will be able to log in, and they will be allowed to download files from /home/ftp, but uploads will be limited to /home/ftp/incoming (and once a file is uploaded into /home/ftp/incoming, it cannot be read nor downloaded from there; the server admin has to move it into /home/ftp first to make it available to others).
 Now we have to configure PureFTPd for anonymous ftp. Open /etc/pure-ftpd/pure-ftpd.conf and make sure that you have the following settings in it:
-#vi /etc/pure-ftpd/pure-ftpd.conf 
+#nano /etc/pure-ftpd/pure-ftpd.conf 
 [...]
 NoAnonymous                 no
 [...]
@@ -378,7 +377,7 @@ Afterwards, we can generate the SSL certificate as follows:
 #openssl req -x509 -nodes -days 7300 -newkey rsa:2048 -keyout /etc/ssl/private/pure-ftpd.pem -out /etc/ssl/private/pure-ftpd.pem
 #
 Change the permissions of the SSL certificate: 
-chmod 600 /etc/ssl/private/pure-ftpd.pem
+#chmod 600 /etc/ssl/private/pure-ftpd.pem
 Finally restart PureFTPd:
 [root@srv122 ~]# /etc/init.d/pure-ftpd restart
 That's it. You can now try to connect using your FTP client; however, you should configure your FTP client to use TLS - see the next chapter how to do this with FileZilla.'
